@@ -36,7 +36,15 @@ def get_meal(mealName):
     pass #TODO
 
 def get_all_meals():
-    return __cursor__.execute("SELECT * FROM Meals").fetchall()   
+    try:
+        return __cursor__.execute("SELECT * FROM Meals").fetchall()   
+    except:
+        #Table might not exist
+        try:
+            create_meal_table()
+            return __cursor__.execute("SELECT * FROM Meals").fetchall()  
+        except:
+            pass #TODO Error window? (don't know what the error might be)
 
 def save_data():
     pass #TODO Save all changes made to the database
