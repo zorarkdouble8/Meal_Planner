@@ -1,0 +1,23 @@
+Idea: to have an application where I can keep track of my nutrients for fitness and keep track of meal planning.
+
+
+Meals:
+	Ingredients:
+		Nutrition facts:
+
+-----
+Meal:
+	Name:
+	Servings:
+	Ingredients [] (one to many)
+
+Ingredients:
+	Name:
+	Nutrition facts: (one to one)
+	
+
+Nutrition Facts: 
+	Sodium:
+	Fat:
+	Saturated fat:
+	ect...
