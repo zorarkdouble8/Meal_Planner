@@ -1,0 +1,30 @@
+{
+    "Version": [1.0],
+
+    "Tables":
+    {
+        "Meals":
+        {
+            "Columns": ["Name", "Servings", "ID", "Ingredients"],
+            "Options": ["PRIMARY KEY('ID' AUTOINCREMENT)"]
+        }
+    },
+
+    "Migration":
+    {
+        "Version": [2.0],
+        "Tables":
+        {
+            "Meals":
+            {
+                "Old_Columns": ["Name", "Servings", "ID", "Ingredients"],
+                "New_Columns": ["'ID' INTEGER", "'Servings' TEXT", "'Name' TEXT", "'Ingredients' TEXT"],
+                "Options": ["PRIMARY KEY('ID' AUTOINCREMENT)"]
+            }
+        },
+
+        "Show_Alert": ["True"],
+        "Force_Update": ["False"],
+        "Update_Description": ["This update does XYZ"]
+    }
+}
