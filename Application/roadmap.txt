@@ -1,3 +1,0 @@
-In database definition, add a feature "old_columns_to" that will rename the old columns
-Expand check_update() to call for a server if there's an update
-Flesh out check_fix_database
