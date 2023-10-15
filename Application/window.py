@@ -4,13 +4,21 @@ from tkinter import ttk
 
 import database
 
-
 def main():
     global __root__
     __root__ = tkinter.Tk("My application")
     __root__.title("My Application")
     __root__.columnconfigure(0, weight=1)
     __root__.rowconfigure(0, weight=1)
+
+    database.check_fix_database() #TODO if error show window
+
+    if (database.check_update() == True):
+        #TODO ask user if he/she wants to update the application
+
+        if (database.update() == True):
+            #TODO show a successful message
+            pass
 
     #makes the background black for the main_frame
     style = ttk.Style()
@@ -42,18 +50,18 @@ def main():
         #adds the meal data into the table
         def config_data_table():
             global data_viewer
-            meal_headers = database.get_meal_column_names()
+            meal_columns = database.get_table_columns("Meals")
 
-            data_viewer= ttk.Treeview(database_frame, show="headings", columns=[index for index, header in enumerate(meal_headers)])
+            data_viewer= ttk.Treeview(database_frame, show="headings", columns=[index for index, header in enumerate(meal_columns)])
             data_viewer.grid(column=0, row=0, rowspan=5, sticky="NSEW")
             data_viewer.columnconfigure(0, weight=1)
             data_viewer.rowconfigure(0, weight=1)
 
         
-            for index, header in enumerate(meal_headers):
-                data_viewer.heading(index, text=f"{header}")
+            for index, column in enumerate(meal_columns):
+                data_viewer.heading(index, text=f"{column[0]}")
 
-            mealData = database.get_all_meals()
+            mealData = database.get_all_table_data("Meals") #TODO add if it's false *Error
             
             for row in mealData:
                 data_viewer.insert('', tkinter.END, values=row) 
@@ -95,7 +103,6 @@ def edit_row_from_database_viewer():
     row_info = data_viewer.item(data_viewer.focus())
     meal_window_editor(row_info["values"])
    
-
 #Deletes a selected row from the database viewer
 def delete_row_from_database_viewer():
     try:
@@ -119,7 +126,7 @@ def show_error_window(error):
 def meal_window_editor(meal_info = None):
     window = tkinter.Toplevel()
 
-    if (meal_info == None):
+    if (meal_info == None or len(meal_info) == 0):
         window.title("Add a meal")
     else:
         window.title("Edit a meal")
@@ -128,29 +135,31 @@ def meal_window_editor(meal_info = None):
     #Centers and sizes window (width x height + xPos + yPos)
     window.geometry(f"200x200+{math.floor(__root__.winfo_screenwidth()/2 - 100)}+{math.floor(__root__.winfo_screenheight()/2 - 100)}")
 
-    meal_options = database.get_meal_column_names()
+    meal_columns = database.get_table_columns("Meals")
 
     entries = []
-    for index, option in enumerate(meal_options):
-        label = ttk.Label(window, text=f'{option}:')
+    for index, column in enumerate(meal_columns): #TODO have entries be type based on the column
+        column_name = column[0]
+        type = column[1]
+
+        label = ttk.Label(window, text=f'{column_name}:')
         label.grid(column=0, row=index)
 
         entry = ttk.Entry(window)
         entry.grid(column=1, row=index)
         entries.append(entry)
 
-        if (meal_info != None):
+        if (meal_info != None and len(meal_info) != 0):
             entry.insert(0, meal_info[index])
 
-    #Calls add_meal_database to add a meal to the database
-    if (meal_info == None):
+    if (meal_info == None or len(meal_info) == 0):
         add_button = ttk.Button(window, text="Add Meal")
         add_button.bind("<ButtonPress-1>", lambda e: (add_meal_database(entries), window.destroy()))
     else:
         add_button = ttk.Button(window, text="Save Meal")
         add_button.bind("<ButtonPress-1>", lambda e: (edit_meal_database(entries), window.destroy()))
 
-    add_button.grid(column=1, row=5)
+    add_button.grid(column=1, sticky="S")
     
 def edit_meal_database(*args): 
     pass #TODO solve index problem
