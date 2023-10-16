@@ -13,6 +13,15 @@
                 "'Name' TEXT",
                 "'Ingredients' TEXT"
             ]
+        },
+        "Ingredients": {
+            "Options": [
+                "PRIMARY KEY('ID' AUTOINCREMENT)"
+            ],
+            "Columns": [
+                "'ID' INTEGER",
+                "'Name' TEXT"
+            ]
         }
     }
 }

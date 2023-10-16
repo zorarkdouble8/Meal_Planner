@@ -20,6 +20,12 @@
                 "Old_Columns": ["Name", "Servings", "ID", "Ingredients"],
                 "New_Columns": ["'ID' INTEGER", "'Servings' TEXT", "'Name' TEXT", "'Ingredients' TEXT"],
                 "Options": ["PRIMARY KEY('ID' AUTOINCREMENT)"]
+            },
+            "Ingredients":
+            {
+                "Old_Columns": [],
+                "New_Columns": ["'ID' INTEGER", "'Name' TEXT"],
+                "Options": ["PRIMARY KEY('ID' AUTOINCREMENT)"]
             }
         },
 

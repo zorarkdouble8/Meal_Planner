@@ -70,14 +70,16 @@ def check_update():
 def update():
     """Updates the database
     
-    Returns False (If an error occured)
+    Returns String (of the error if it occured)
             True (Successful!)
     """
 
     with open("Application\Definitions\database_definition.json", "r+") as file:
         data_dict = json.load(file)
 
-        if (update_database(data_dict) == True):
+        result = update_database(data_dict)
+
+        if (result == True):
             new_data_dic = migrate_definitions(data_dict)
 
             file.seek(0)
@@ -86,7 +88,8 @@ def update():
 
             return True
         else:
-            return False
+            print(result)
+            return result
 
 def migrate_definitions(data_dict): #will migrate the migration to the definition
     data_dict["Version"] = data_dict["Migration"]["Version"]
@@ -129,6 +132,9 @@ def update_database(data_dict):
             table_columns = get_table_columns(table)
             def_columns = data_dict["Migration"]["Tables"][table]["New_Columns"]
 
+            # if (table_columns.keys() == def_columns.keys()):
+            #     continue #New definition must be the same as the old one #TODO what about options though?
+
             if (table_columns == False):
                 return "An error went wrong while getting the table columns" 
             
@@ -144,12 +150,15 @@ def update_database(data_dict):
                     return result
 
                 #Place old data into new table
-                data = get_all_table_data(mirror_table_name) #TODO Error catching
+                data = get_all_table_data(mirror_table_name)
 
-                if (len(data) != 0):
-                    __cursor__.execute(f"INSERT INTO {table} {tuple(data)} VALUES {tuple(table_columns)}")  #TODO Error catching
+                try: 
+                    if (len(data) != 0):
+                        __cursor__.execute(f"INSERT INTO {table} {tuple(data)} VALUES {tuple(table_columns)}")
 
-                __cursor__.execute(f"DROP TABLE {mirror_table_name}")  #TODO Error catching
+                    __cursor__.execute(f"DROP TABLE {mirror_table_name}")
+                except Exception as e:
+                    return e
             
     __connection__.commit()
     return True
@@ -184,55 +193,27 @@ def get_table_columns(table_name):
     return tuple(name_list)
 
 #Creates a mirror of a table and then deletes it. This returns the new_table_name or False if unsuccessful
-def mirror_delete_table(table_name):
+def mirror_delete_table(table_name): #TODO Error catching
     """reates a mirror of a table and then deletes it. This returns the new_table_name or False if unsuccessful
     
         Arguements: table_name (string)
     """
-    table_columns = get_table_columns(table_name)
+    column_names = [col_def[0] for col_def in get_table_columns(table_name)]
+
     table_data = get_all_table_data(table_name)
     new_table_name = table_name + "_Mirror"
 
+    didSucceed = create_table(new_table_name, column_names)
 
-    didSucceed = create_table(new_table_name, table_columns)
-
-    if (not didSucceed or table_columns == False or table_data == False):
+    if (not didSucceed or column_names == False or table_data == False):
         return False
     
     for row in table_data:
-        __cursor__.execute(f"INSERT INTO {new_table_name} {tuple(table_columns)} VALUES {tuple(str(element) for element in row)}")
+        __cursor__.execute(f"INSERT INTO {new_table_name} {tuple(column_names)} VALUES {tuple(str(element) for element in row)}")
     
     __cursor__.execute(f"DROP TABLE {table_name}")
 
     return new_table_name
-
-
-def add_contraint_to_meals_table(): #TODO Add a arguements to customize the constriants and table_name
-    """Adds a constraint to a meal table by recreating the meal table
-    
-        Returns: True if successful, False otherwise
-    """
-    new_table_name = mirror_delete_table("Meals")
-
-    if (new_table_name == False):
-        return False
-
-    table_columns = get_table_columns(new_table_name)
-
-    create_table("Meals", table_columns, "PRIMARY KEY (ID)")
-
-    table_data = get_all_table_data(new_table_name)
-
-    if (table_data == False):
-        return False
-
-    for row in table_data:
-        __cursor__.execute(f"INSERT INTO {new_table_name} {tuple(table_columns)} VALUES {tuple(row)}")
-
-    __cursor__.execute(f"DROP TABLE {new_table_name}")
-
-    __connection__.commit()
-    return True
 
 #adds a meal to database where meal is a list or tuple of the columns in the meal table
 def add_meal(meal): #TODO make this modular, make this add data into table
@@ -252,7 +233,7 @@ def add_meal(meal): #TODO make this modular, make this add data into table
     __cursor__.execute(f"INSERT INTO Meals {tuple(list_column_names)} VALUES {tuple(list_meal)}")
 
 #Get's all the data from a table. Arguments: table_name (string). Returns a tuple of the data, False if the operation is unsuccessful
-def get_all_table_data(table_name, did_loop=False): #TODO documentation
+def get_all_table_data(table_name): #TODO documentation
     try:
         return __cursor__.execute(f"SELECT * FROM {table_name}").fetchall()
     except Exception as e:
