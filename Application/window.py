@@ -33,11 +33,17 @@ def main():
     tabs.grid(column=0, row=0, sticky="NESW")
     tabs.rowconfigure(0, weight=1)
     tabs.columnconfigure(0, weight=1)
+    
 
-    #Meal table: (for meals through the week)
-    #TODO implement meal frame
-    meal_frame = ttk.Frame(tabs)
-    tabs.add(meal_frame, text="Meal Plan")
+    def add_meal_frame():#TODO fully implement meal frame
+        meal_frame = ttk.Frame(tabs)
+        tabs.add(meal_frame, text="Meal Plan")
+
+      
+
+        
+        
+    add_meal_frame()
 
     #Configures the widgets in the data frame
     def config_data_frame():
