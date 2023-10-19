@@ -1,9 +1,9 @@
 import sqlite3
 import json
 
-def initialize():
+def initialize(database = "Food.db"):
     global __connection__ 
-    __connection__ = sqlite3.connect("Food.db")
+    __connection__ = sqlite3.connect(database)
 
     global __cursor__
     __cursor__ = __connection__.cursor()
