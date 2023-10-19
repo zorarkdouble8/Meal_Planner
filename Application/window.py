@@ -11,14 +11,17 @@ def main():
     __root__.columnconfigure(0, weight=1)
     __root__.rowconfigure(0, weight=1)
 
-    database.check_fix_database() #TODO if error show window
+    try:
+        database.check_fix_database() #TODO if error show window
 
-    if (database.check_update() == True):
-        #TODO ask user if he/she wants to update the application
+        if (database.check_update() == True): #can raise FileNotFoundError
+            #TODO ask user if he/she wants to update the application
 
-        if (database.update() == True):
-            #TODO show a successful message
-            pass
+            if (database.update() == True):
+                #TODO show a successful message
+                pass
+    except Exception as error:
+        raise Exception(error) #TODO Add error window to show user something went wrong
 
     #makes the background black for the main_frame
     style = ttk.Style()
@@ -34,15 +37,10 @@ def main():
     tabs.rowconfigure(0, weight=1)
     tabs.columnconfigure(0, weight=1)
     
-
     def add_meal_frame():#TODO fully implement meal frame
         meal_frame = ttk.Frame(tabs)
         tabs.add(meal_frame, text="Meal Plan")
 
-      
-
-        
-        
     add_meal_frame()
 
     #Configures the widgets in the data frame
@@ -98,9 +96,12 @@ def main():
     #TODO I would like these methods to be up on top of the functions
     config_data_frame()  
 
-    #TODO implement settings frame
-    settings_frame = ttk.Frame(tabs)
-    tabs.add(settings_frame, text="Settings")
+    def add_settings_frame(): #TODO fully implement meal frame
+        settings_frame = ttk.Frame(tabs)
+        tabs.add(settings_frame, text="Settings")
+
+
+    add_settings_frame()
 
     __root__.mainloop()
 
