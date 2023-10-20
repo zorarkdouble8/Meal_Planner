@@ -145,9 +145,14 @@ def meal_window_editor(meal_info = None):
         label = ttk.Label(window, text=f'{column_name}:')
         label.grid(column=0, row=index)
 
-        entry = ttk.Entry(window)
-        entry.grid(column=1, row=index)
-        entries.append(entry)
+        if (type == "TEXT"):
+            entry = ttk.Entry(window)
+            entry.grid(column=1, row=index)
+            entries.append(entry)
+        elif (column_name == "ID"):
+            Idlabel = ttk.Label(window, text="Automatically Generated")
+            Idlabel.grid(column=1, row=index)
+
 
         if (meal_info != None and len(meal_info) != 0):
             entry.insert(0, meal_info[index])

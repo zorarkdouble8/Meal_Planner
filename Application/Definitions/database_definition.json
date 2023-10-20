@@ -9,8 +9,8 @@
             ],
             "Columns": [
                 "'ID' INTEGER",
-                "'Servings' TEXT",
                 "'Name' TEXT",
+                "'Servings' TEXT",
                 "'Ingredients' TEXT"
             ]
         },

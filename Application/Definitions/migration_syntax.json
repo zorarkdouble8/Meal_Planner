@@ -18,7 +18,7 @@
             "Meals":
             {
                 "Old_Columns": ["Name", "Servings", "ID", "Ingredients"],
-                "New_Columns": ["'ID' INTEGER", "'Servings' TEXT", "'Name' TEXT", "'Ingredients' TEXT"],
+                "New_Columns": ["'ID' INTEGER", "'Name' TEXT", "'Servings' TEXT", "'Ingredients' TEXT"],
                 "Options": ["PRIMARY KEY('ID' AUTOINCREMENT)"]
             },
             "Ingredients":
