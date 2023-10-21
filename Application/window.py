@@ -166,9 +166,6 @@ def meal_window_editor(meal_info = None):
         elif (column_name == "ID"):
             id_label = ttk.Label(window, text="Automatically Generated")
             id_label.grid(column=1, row=index)
-        
-        if (meal_info != None and len(meal_info) != 0):
-            entry.insert(0, meal_info[index])
 
     if (meal_info == None or len(meal_info) == 0):
         add_button = ttk.Button(window, text="Add Meal")
