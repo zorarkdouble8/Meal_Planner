@@ -11,14 +11,17 @@ def main():
     __root__.columnconfigure(0, weight=1)
     __root__.rowconfigure(0, weight=1)
 
-    database.check_fix_database() #TODO if error show window
+    try:
+        database.check_fix_database() #TODO if error show window
 
-    if (database.check_update() == True):
-        #TODO ask user if he/she wants to update the application
+        if (database.check_update() == True): #can raise FileNotFoundError
+            #TODO ask user if he/she wants to update the application
 
-        if (database.update() == True):
-            #TODO show a successful message
-            pass
+            if (database.update() == True):
+                #TODO show a successful message
+                pass
+    except Exception as error:
+        raise Exception(error) #TODO Add error window to show user something went wrong
 
     #makes the background black for the main_frame
     style = ttk.Style()
@@ -33,11 +36,12 @@ def main():
     tabs.grid(column=0, row=0, sticky="NESW")
     tabs.rowconfigure(0, weight=1)
     tabs.columnconfigure(0, weight=1)
+    
+    def add_meal_frame():#TODO fully implement meal frame
+        meal_frame = ttk.Frame(tabs)
+        tabs.add(meal_frame, text="Meal Plan")
 
-    #Meal table: (for meals through the week)
-    #TODO implement meal frame
-    meal_frame = ttk.Frame(tabs)
-    tabs.add(meal_frame, text="Meal Plan")
+    add_meal_frame()
 
     #Configures the widgets in the data frame
     def config_data_frame():
@@ -86,15 +90,22 @@ def main():
             add_button.grid(column=0, row=1)
             add_button.bind("<ButtonPress-1>", lambda e: meal_window_editor()) 
 
+            save_button = ttk.Button(options_frame, text="Save")
+            save_button.grid(column=0, row=4)
+            save_button.bind("<ButtonPress-1>", lambda e: database.save_data())
+
         config_data_table()
         config_options()
 
     #TODO I would like these methods to be up on top of the functions
     config_data_frame()  
 
-    #TODO implement settings frame
-    settings_frame = ttk.Frame(tabs)
-    tabs.add(settings_frame, text="Settings")
+    def add_settings_frame(): #TODO fully implement meal frame
+        settings_frame = ttk.Frame(tabs)
+        tabs.add(settings_frame, text="Settings")
+
+
+    add_settings_frame()
 
     __root__.mainloop()
 
@@ -138,6 +149,8 @@ def meal_window_editor(meal_info = None):
     meal_columns = database.get_table_columns("Meals")
 
     entries = []
+    labels = []
+
     for index, column in enumerate(meal_columns): #TODO have entries be type based on the column
         column_name = column[0]
         type = column[1]
@@ -149,17 +162,17 @@ def meal_window_editor(meal_info = None):
             entry = ttk.Entry(window)
             entry.grid(column=1, row=index)
             entries.append(entry)
+            labels.append(label)
         elif (column_name == "ID"):
-            Idlabel = ttk.Label(window, text="Automatically Generated")
-            Idlabel.grid(column=1, row=index)
-
-
+            id_label = ttk.Label(window, text="Automatically Generated")
+            id_label.grid(column=1, row=index)
+        
         if (meal_info != None and len(meal_info) != 0):
             entry.insert(0, meal_info[index])
 
     if (meal_info == None or len(meal_info) == 0):
         add_button = ttk.Button(window, text="Add Meal")
-        add_button.bind("<ButtonPress-1>", lambda e: (add_meal_database(entries), window.destroy()))
+        add_button.bind("<ButtonPress-1>", lambda e: (add_meal(labels, entries), window.destroy()))
     else:
         add_button = ttk.Button(window, text="Save Meal")
         add_button.bind("<ButtonPress-1>", lambda e: (edit_meal_database(entries), window.destroy()))
@@ -169,20 +182,22 @@ def meal_window_editor(meal_info = None):
 def edit_meal_database(*args): 
     pass #TODO solve index problem
 
-#Adds a meal to the database, args is the entries used to define a meal 
-#and then refreshes the database viewer of the changes
-def add_meal_database(*args):
+def add_meal(labels, entries): #TODO error catching
+    """Adds a meal to the database and then refreshes the database viewer
+    
+    Arguements: labels (the label associated with the entry)
+                entries (entries used for user input)
+    """
     meal = []
 
-    for arg in args:
-        for entry in arg:
-            text = entry.get()
-            if (text == ''):
-                text = "None"
+    for index, entry in enumerate(entries):
+        text = entry.get()
+        if (text == ''):
+            text = "None"
 
-            meal.append(text)
+        meal.append((labels[index].cget("text").replace(":", ""), text))
 
-    database.add_meal(tuple(meal))
+    database.add_row_to_table("Meals", meal)
     add_meal_to_database_viewer(meal)
 
 #refreshes the database viewer widget
