@@ -37,22 +37,25 @@ class TableEditorFrame(Window):
         except Exception as error: #TODO customize error
             raise Exception(error)
         
-        self.__configure_data_viewer__()
-        self.__configure_options__()
+        self._configure_data_viewer()
+        self._configure_options()
 
-    def __configure_data_viewer__(self):
+    def _configure_data_viewer(self):
         self.data_viewer = ttk.Treeview(self.frame, show="headings", columns=self.columns)
         self.data_viewer.grid(column=0, row=0, rowspan=5, sticky="NSEW")
         self.data_viewer.columnconfigure(0, weight=1)
         self.data_viewer.rowconfigure(0, weight=1)
 
+        self._populate_data_viewer()
+
+    def _populate_data_viewer(self):
         for index, column in enumerate(self.columns):
             self.data_viewer.heading(index, text=f"{column[0]}")
 
         for row in self.data:
             self.data_viewer.insert('', tkinter.END, values=row)
 
-    def __configure_options__(self):
+    def _configure_options(self):
         info_label = ttk.Label(self.options_frame, text="Options")
         info_label.grid(column=0, row=0)
 
@@ -120,10 +123,10 @@ class TableEditorFrame(Window):
 
         if (row_data == None or len(row_data) == 0):
             add_button = ttk.Button(window, text=f"Add {self.object_message}")
-            add_button.bind("<ButtonPress-1>", lambda e: (self.modify_row_database(labels, entries), self.refresh_data_viewer(), window.destroy()))
+            add_button.bind("<ButtonPress-1>", lambda e: ((self.add_row_database(labels, entries), self._refresh_data_viewer()), window.destroy()))
         else:
             add_button = ttk.Button(window, text=f"Save {self.object_message}")
-            add_button.bind("<ButtonPress-1>", lambda e: (self.add_row_database(entries), self.refresh_data_viewer(), window.destroy()))
+            add_button.bind("<ButtonPress-1>", lambda e: ((self.modify_row_database(entries), self._refresh_data_viewer()), window.destroy()))
 
         add_button.grid(column=1, sticky="S")
             
@@ -162,5 +165,13 @@ class TableEditorFrame(Window):
         #FIXME modify data using the database library
             
     #Refreshed data viewer widget
-    def refresh_data_viewer(self):
-        print("Refreshing data viewer!") #FIXME
+    def _refresh_data_viewer(self):
+        print("Refreshing!")    
+        
+        try:
+            self.data = database.get_all_table_data(self.table_name)
+        except Exception as error: #TODO customize error
+            raise Exception(error)
+        
+        self.data_viewer.delete(*self.data_viewer.get_children())
+        self._populate_data_viewer()

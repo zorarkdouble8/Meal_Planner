@@ -44,7 +44,7 @@ def check_database_definition(data_dict): # TODO Error handling
                     #Check if the names are the same
                     for x in range(0, len(def_columns)):
                         if (f"'{table_columns[x][0]}' {table_columns[x][1]}" != def_columns[x]):
-                            raise Exception(f"Columns don't match! '{table_columns[x][0]}' != {def_columns[x]}")
+                            raise Exception(f"Columns don't match! '{table_columns[x][0]}' {table_columns[x][1]} != {def_columns[x]}")
     except Exception as error:
         raise Exception(error)
     __connection__.commit()
