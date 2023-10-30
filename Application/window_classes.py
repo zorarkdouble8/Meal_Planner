@@ -5,7 +5,12 @@ import tkinter
 
 import database
 
-class TableEditorFrame():
+class Window():
+    def __init__(self, root, parent):
+        self.root = root
+        self.parent = parent
+
+class TableEditorFrame(Window):
     #TODO customize button names and such
 
     def __init__(self, root, parent, table_name, object_message):
@@ -16,11 +21,13 @@ class TableEditorFrame():
                     table_name (the table this editor will show)
                     object_message (a string that customizes the option message IE: add a 'meal', add a <object_message>)
         """
-        self.root = root
+        Window.__init__(self, root, parent)
+
+
         self.table_name = table_name
         self.object_message = object_message.lower()
 
-        self.frame = ttk.Frame(parent)
+        self.frame = ttk.Frame(self.parent)
         self.options_frame = ttk.Frame(self.frame)
         self.options_frame.grid(column=1, row=0, sticky="N")
 
