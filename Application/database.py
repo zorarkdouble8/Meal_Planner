@@ -227,6 +227,16 @@ def add_meal(meal): #TODO make this modular, make this add data into table, Erro
 
     __cursor__.execute(f"INSERT INTO Meals {tuple(list_column_names)} VALUES {tuple(list_meal)}")
 
+def delete_table_data(data_index, table_name):
+    """Deletes a row of data using a unique data index
+    
+    Parameters: data_index (int or string (the unique ID))
+                table_name (string)"""
+    
+    try:
+        __cursor__.execute(f"DELETE FROM {table_name} WHERE ID={data_index}")
+    except Exception as error:
+        raise Exception(error)
 def get_all_table_data(table_name): #Can cause error
     """Gets all the table data using a table name
     

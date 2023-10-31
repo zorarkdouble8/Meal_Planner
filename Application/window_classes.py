@@ -79,9 +79,13 @@ class TableEditorFrame(Window):
     def delete_row_from_database_viewer(self):
         try:
             row_selection = self.data_viewer.focus()
+            print(self.data_viewer.item(row_selection))
             self.data_viewer.delete(row_selection)
-        except:
-            print("No row selected!")
+            
+           # database.delete_table_data()
+        except Exception as error: #TODO do error handling
+            raise Exception(error)
+            #print("No row selected!")
             # show_error_window("No row selected!") FIXME add error window class
 
     #Gets the row to be edditted and shows the meal window editor to edit the row
@@ -166,8 +170,6 @@ class TableEditorFrame(Window):
             
     #Refreshed data viewer widget
     def _refresh_data_viewer(self):
-        print("Refreshing!")    
-        
         try:
             self.data = database.get_all_table_data(self.table_name)
         except Exception as error: #TODO customize error
