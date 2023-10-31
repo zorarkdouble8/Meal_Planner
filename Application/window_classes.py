@@ -49,8 +49,11 @@ class TableEditorFrame(Window):
         self._populate_data_viewer()
 
     def _populate_data_viewer(self):
+        self.header = []
+
         for index, column in enumerate(self.columns):
             self.data_viewer.heading(index, text=f"{column[0]}")
+            self.header.append(column[0]) #for use in other methods
 
         for row in self.data:
             self.data_viewer.insert('', tkinter.END, values=row)
@@ -78,15 +81,21 @@ class TableEditorFrame(Window):
     #Deletes a selected row from the database viewer
     def delete_row_from_database_viewer(self):
         try:
-            row_selection = self.data_viewer.focus()
-            print(self.data_viewer.item(row_selection))
+            row_selection = self.data_viewer.focus() #can case Index error
+
+            data = self.data_viewer.item(row_selection)
+            values = data["values"]
+            column_index = self.header.index("ID") #can cause value error
+
+            database.delete_table_data(values[column_index], self.table_name)
+
             self.data_viewer.delete(row_selection)
-            
-           # database.delete_table_data()
+        except IndexError as error: #TODO do error handling
+            raise IndexError(error, "No row may be selected")
+        except ValueError as error: #TODO do error handling
+            raise ValueError(error, "Table columns don't have an id header!")
         except Exception as error: #TODO do error handling
             raise Exception(error)
-            #print("No row selected!")
-            # show_error_window("No row selected!") FIXME add error window class
 
     #Gets the row to be edditted and shows the meal window editor to edit the row
     def edit_row_from_database_viewer(self):

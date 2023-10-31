@@ -24,8 +24,8 @@ def check_fix_database(): #Checks the database and fixs any problems
 def check_database_definition(data_dict): # TODO Error handling
     """checks if the database is equal to the definition
     
-    Returns: String (any error that occured
-    )"""
+    Returns: String (any error that occured)
+    """
     try:
         table_list = __cursor__.execute("SELECT tbl_name FROM 'main'.sqlite_master").fetchall()
         table_list = [table[0] for table in table_list]
