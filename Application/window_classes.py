@@ -147,7 +147,7 @@ class TableEditorFrame(Window):
             add_button.bind("<ButtonPress-1>", lambda e: ((self.add_row_database(labels, entries), self._refresh_data_viewer()), window.destroy()))
         else:
             add_button = ttk.Button(window, text=f"Save {self.object_message}")
-            add_button.bind("<ButtonPress-1>", lambda e: ((self.modify_row_database(labels, entries), self._refresh_data_viewer()), window.destroy()))
+            add_button.bind("<ButtonPress-1>", lambda e: ((self.modify_row_database(id_label, labels, entries), self._refresh_data_viewer()), window.destroy()))
 
         add_button.grid(column=1, sticky="S")
             
@@ -168,14 +168,13 @@ class TableEditorFrame(Window):
 
         database.add_row_to_table(self.table_name, meal)
 
-    def modify_row_database(self, labels, entries): #TODO error catching
+    def modify_row_database(self, id_label, labels, entries): #TODO error catching
         """Modifies and existing row in the database
         
         Arguements: labels (the label associated with the entry)
                     entries (entries used for user input)
         """
         meal = []
-
         for index, entry in enumerate(entries):
             text = entry.get()
             if (text == ''):
@@ -183,9 +182,7 @@ class TableEditorFrame(Window):
 
             meal.append((labels[index].cget("text").replace(":", ""), text))
 
-        print(meal)
-
-        #FIXME modify data using the database library
+        database.update_row_to_table(self.table_name, id_label.cget("text"), meal)
             
     #Refreshed data viewer widget
     def _refresh_data_viewer(self):
