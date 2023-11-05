@@ -11,9 +11,7 @@ def main():
     __root__.title("My Application")
     __root__.columnconfigure(0, weight=1)
     __root__.rowconfigure(0, weight=1)
-
-    ErrorWindow(__root__, error_message="Test")
-                
+   
     try:
         database.check_fix_database() #TODO if error show window
 
@@ -24,7 +22,7 @@ def main():
                 #TODO show a successful message
                 pass
     except Exception as error:
-        raise Exception(error) #TODO Add error window to show user something went wrong
+        ErrorWindow(__root__, error)
 
     #makes the background black for the main_frame
     style = ttk.Style()
@@ -58,10 +56,6 @@ def main():
     add_settings_frame()
 
     __root__.mainloop()
-
-#Shows a error screen and takes in a argument error (that shows in text in the window)
-def show_error_window(error):
-    error_window = ErrorWindow()
 
 if (__name__ == "__main__"):
     main()
