@@ -195,7 +195,7 @@ def mirror_delete_table(table_name): #TODO Error catching
 def add_row_to_table(table_name, data):
     """Adds a row of data to a table in the database
     
-    Arguements: table_name (string)
+    Arguments: table_name (string)
                 data (tuple or list in the form: (column, data))          
     """
     try:
@@ -210,22 +210,24 @@ def add_row_to_table(table_name, data):
     except Exception as error:
         raise Exception(error)
 
-#adds a meal to database where meal is a list or tuple of the columns in the meal table
-def add_meal(meal): #TODO make this modular, make this add data into table, Error handling
-    column_names = get_table_columns("Meals")
-
-    list_meal = list(meal)
-    list_column_names = list(column_names)
+def update_row_to_table(table_name, id, data):
+    """Adds a row of data to a table in the database
     
-    #Make columns equal to meal data
-    if (not len(list_column_names) == len(list_meal)):
-        while(len(list_column_names) > len(list_meal)):
-            list_column_names.pop(len(list_column_names) - 1)
-        
-        while(len(list_column_names) < len(list_meal)):
-            list_meal.pop(len(list_meal) - 1)
+    Arguments: table_name (string)
+                id (int (the unique identifier of the row))
+                data (tuple or list in the form: (column, data))          
+    """
+    try:
+        columns = []
+        values = []
 
-    __cursor__.execute(f"INSERT INTO Meals {tuple(list_column_names)} VALUES {tuple(list_meal)}")
+        for column, value in data:
+            columns.append(column.title())
+            values.append(value)
+
+        __cursor__.execute(f"UPDATE {table_name} SET {tuple(columns)} = {tuple(values)} WHERE ID={id}")
+    except Exception as e:
+        raise Exception(e)
 
 def delete_table_data(data_index, table_name):
     """Deletes a row of data using a unique data index
