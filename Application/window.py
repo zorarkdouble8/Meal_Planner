@@ -12,6 +12,8 @@ def main():
     __root__.columnconfigure(0, weight=1)
     __root__.rowconfigure(0, weight=1)
 
+    ErrorWindow(__root__, error_message="Test")
+                
     try:
         database.check_fix_database() #TODO if error show window
 
@@ -59,14 +61,7 @@ def main():
 
 #Shows a error screen and takes in a argument error (that shows in text in the window)
 def show_error_window(error):
-    #TODO make window size bigger and add error image and add ok button
-    window = tkinter.Toplevel()
-    window.title("Error!")
-
-    #TODO make window popup in the middle of the screen (use root winfo)
-
-    label = ttk.Label(window, text=f"{error}")
-    label.grid(column=0, row=0)
+    error_window = ErrorWindow()
 
 if (__name__ == "__main__"):
     main()

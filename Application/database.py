@@ -237,6 +237,7 @@ def delete_table_data(data_index, table_name):
         __cursor__.execute(f"DELETE FROM {table_name} WHERE ID={data_index}")
     except Exception as error:
         raise Exception(error)
+    
 def get_all_table_data(table_name): #Can cause error
     """Gets all the table data using a table name
     

@@ -10,6 +10,27 @@ class Window():
         self.root = root
         self.parent = parent
 
+class ErrorWindow(Window):
+    def __init__(self, root, error_message, parent=None):
+        Window.__init__(self, root, parent)
+        self.error = error_message
+        
+        self.window = tkinter.Toplevel()
+        self.window.title("Error!")
+
+        self._center_and_size_window()
+        self._add_message()
+        
+    def _center_and_size_window(self):
+        self.window.minsize(self.window.winfo_reqwidth() + 50, self.window.winfo_reqwidth() + 50)
+        #Centers and sizes window (width x height + xPos + yPos)
+        self.window.geometry(f"200x200+{math.floor(self.root.winfo_screenwidth()/2 - 100)}+{math.floor(self.root.winfo_screenheight()/2 - 100)}")
+
+    def _add_message(self):
+        label = ttk.Label(self.window, text=f"{self.error}")
+        label.grid(column=0, row=0)
+        
+
 class TableEditorFrame(Window):
     #TODO customize button names and such
 
