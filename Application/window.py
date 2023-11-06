@@ -18,11 +18,11 @@ def main():
         if (database.check_update() == True): #can raise FileNotFoundError
             #TODO ask user if he/she wants to update the application
 
-            if (database.update() == True):
-                #TODO show a successful message
-                pass
+            database.update()
+            #TODO show a successful message    
     except Exception as error:
         ErrorWindow(__root__, error)
+        raise Exception(error)
 
     #makes the background black for the main_frame
     style = ttk.Style()

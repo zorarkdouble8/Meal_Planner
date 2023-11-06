@@ -72,14 +72,14 @@ def update():
         with open("Application\Definitions\database_definition.json", "r+") as file:
             data_dict = json.load(file)
 
-            if (update_database(data_dict) == True):
-                new_data_dic = migrate_definitions(data_dict)
+            update_database(data_dict)
+            new_data_dic = migrate_definitions(data_dict)
 
-                file.seek(0)
-                json.dump(new_data_dic, file, indent=4)
-                file.truncate()
+            file.seek(0)
+            json.dump(new_data_dic, file, indent=4)
+            file.truncate()
     except Exception as error:
-        return error
+        raise Exception(error)
 
 def migrate_definitions(data_dict): #will migrate the migration to the definition
     try:
@@ -118,6 +118,8 @@ def update_database(data_dict):
             else:
                 #Check if the table column's are consistant with the new definition
                 table_columns = get_table_columns(table)
+                table_column_names = [column[0] for column in table_columns]
+
                 def_columns = data_dict["Migration"]["Tables"][table]["New_Columns"]
 
                 if (len(def_columns) < len(table_columns)):
@@ -132,7 +134,8 @@ def update_database(data_dict):
                     data = get_all_table_data(mirror_table_name)
 
                     if (len(data) != 0):
-                        __cursor__.execute(f"INSERT INTO {table} {tuple(data)} VALUES {tuple(table_columns)}")
+                        for row in data:
+                            __cursor__.execute(f"INSERT INTO {table} {tuple(table_column_names)} VALUES {tuple(row)}")
 
                     __cursor__.execute(f"DROP TABLE {mirror_table_name}")
             
