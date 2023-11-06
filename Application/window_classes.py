@@ -32,8 +32,6 @@ class ErrorWindow(Window):
         
 
 class TableEditorFrame(Window):
-    #TODO customize button names and such
-
     def __init__(self, root, parent, table_name, object_message):
         """Adds a table editor frame to a parent obj
         
@@ -55,7 +53,7 @@ class TableEditorFrame(Window):
         try:
             self.columns = database.get_table_columns(table_name)
             self.data = database.get_all_table_data(table_name)
-        except Exception as error: #TODO customize error
+        except Exception as error:
             raise Exception(error)
         
         self._configure_data_viewer()
@@ -111,11 +109,11 @@ class TableEditorFrame(Window):
             database.delete_table_data(values[column_index], self.table_name)
 
             self.data_viewer.delete(row_selection)
-        except IndexError as error: #TODO do error handling
+        except IndexError as error:
             raise IndexError(error, "No row may be selected")
-        except ValueError as error: #TODO do error handling
+        except ValueError as error:
             raise ValueError(error, "Table columns don't have an id header!")
-        except Exception as error: #TODO do error handling
+        except Exception as error:
             raise Exception(error)
 
     #Gets the row to be editted and shows the meal window editor to edit the row
@@ -140,7 +138,7 @@ class TableEditorFrame(Window):
         entries = []
         labels = []
 
-        for index, column in enumerate(self.columns): #TODO have entries be type based on the column
+        for index, column in enumerate(self.columns):
             column_name = column[0]
             type = column[1]
 
@@ -172,7 +170,7 @@ class TableEditorFrame(Window):
 
         add_button.grid(column=1, sticky="S")
             
-    def add_row_database(self, labels, entries): #TODO error catching
+    def add_row_database(self, labels, entries):
         """Adds a row to the database and then refreshes the database viewer
     
         Arguements: labels (the label associated with the entry)
@@ -189,7 +187,7 @@ class TableEditorFrame(Window):
 
         database.add_row_to_table(self.table_name, meal)
 
-    def modify_row_database(self, id_label, labels, entries): #TODO error catching
+    def modify_row_database(self, id_label, labels, entries):
         """Modifies and existing row in the database
         
         Arguements: labels (the label associated with the entry)
@@ -209,7 +207,7 @@ class TableEditorFrame(Window):
     def _refresh_data_viewer(self):
         try:
             self.data = database.get_all_table_data(self.table_name)
-        except Exception as error: #TODO customize error
+        except Exception as error:
             raise Exception(error)
         
         self.data_viewer.delete(*self.data_viewer.get_children())

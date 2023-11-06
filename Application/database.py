@@ -21,7 +21,7 @@ def check_fix_database(): #Checks the database and fixs any problems
     except Exception as error:
         raise Exception(error)
 
-def check_database_definition(data_dict): # TODO Error handling
+def check_database_definition(data_dict):
     """checks if the database is equal to the definition
     
     Returns: String (any error that occured)
@@ -45,9 +45,10 @@ def check_database_definition(data_dict): # TODO Error handling
                     for x in range(0, len(def_columns)):
                         if (f"'{table_columns[x][0]}' {table_columns[x][1]}" != def_columns[x]):
                             raise Exception(f"Columns don't match! '{table_columns[x][0]}' {table_columns[x][1]} != {def_columns[x]}")
+                        
+        __connection__.commit()
     except Exception as error:
         raise Exception(error)
-    __connection__.commit()
 
 def check_update():
     """Checks if there's an update available inside the definition.json
@@ -171,8 +172,7 @@ def get_table_columns(table_name):
     except Exception as error:
         raise Exception(error)
 
-#Creates a mirror of a table and then deletes it. This returns the new_table_name or False if unsuccessful
-def mirror_delete_table(table_name): #TODO Error catching
+def mirror_delete_table(table_name): 
     """reates a mirror of a table and then deletes it. This returns the new_table_name or False if unsuccessful
     
         Arguements: table_name (string)
