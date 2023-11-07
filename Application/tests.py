@@ -1,23 +1,25 @@
+import os
 import unittest
 import sqlite3
 
 import database
 
-def initialize():
-    global __connection__ 
-    __connection__ = sqlite3.connect("Test.db")
+class Database_Tests(unittest.TestCase):
+    def setUp(self):
+        database.initialize("Test.db")
 
-    global __cursor__
-    __cursor__ = __connection__.cursor()
+    def test_create_table(self):
+        """Test basic creation functionality"""
+        database.create_table("Testing", ("Test1", "Test2", "Test3"))
 
-class Database_Tests():
-    def __init__(self) -> None:
-        pass
+        columns = database.get_table_columns("Testing")
+        answer_columns = (("Test1", ''), ("Test2", ''), ("Test3", ''))
+        self.assertEqual(columns, answer_columns)
 
-    #TODO add test cases
-
+    def tearDown(self):
+        database.close_connection()
+        os.remove(".\Test.db")
 
 if (__name__ == "__main__"):
-    database.initialize("Test.db")
-    initialize()
     unittest.main()
+
