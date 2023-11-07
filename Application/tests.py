@@ -4,22 +4,69 @@ import sqlite3
 
 import database
 
-class Database_Tests(unittest.TestCase):
+class TestDatabaseMethods(unittest.TestCase):
+    """Test all the methods that get data from the database"""
     def setUp(self):
         database.initialize("Test.db")
 
-    def test_create_table(self):
-        """Test basic creation functionality"""
-        database.create_table("Testing", ("Test1", "Test2", "Test3"))
+        #Create tables
+        database.create_table("Test1", ("Test1", "Test2", "Test3"))
+        database.create_table("Test2", ("'Test1' TEXT", "'Test2' INTEGER", "'Test3' OTHER"))
+        database.create_table("Test3", ("'Test1' INTEGER", "'Test2' TEXT", "'Test3' TEXT"))
 
-        columns = database.get_table_columns("Testing")
-        answer_columns = (("Test1", ''), ("Test2", ''), ("Test3", ''))
-        self.assertEqual(columns, answer_columns)
+        #Add data to the tables
+        database.add_row_to_table("Test1", (("Test1", "Item1"), ("Test2", "Item2")))
+        database.add_row_to_table("Test2", (("Test1", "Item1"), ("Test2", "Item2")))
+        database.add_row_to_table("Test3", (("Test1", "Item1"), ("Test2", "Item2"), ("Test3", "Item3")))
+        database.add_row_to_table("Test3", (("Test2", "Item1"), ("Test1", "Item2"), ("Test3", "Item3")))
+
+    def test_mirror_delete_table(self):
+        new_name1 = database.mirror_delete_table("Test1")
+        new_name2 = database.mirror_delete_table("Test2")
+        new_name3 = database.mirror_delete_table("Test3")
+
+        self.assertEqual(database.get_all_table_data(new_name1), [("Item1", "Item2", 'None')])
+        self.assertEqual(database.get_all_table_data(new_name2), [("Item1", "Item2", 'None')])
+        self.assertEqual(database.get_all_table_data(new_name3), [("Item1", "Item2", "Item3"), ("Item2", "Item1", "Item3")])
+
+        self.assertRaises(Exception("no such table: Test1"), database.mirror_delete_table("Test1"))
+        self.assertRaises(Exception("no such table: Test2"), database.mirror_delete_table("Test2"))
+        self.assertRaises(Exception("no such table: Test3"), database.mirror_delete_table("Test3"))
+
+    def test_add_row_to_table(self):
+        pass
+
+    def test_update_row_to_table(self):
+        pass
+
+    def test_delete_table_data(self):
+        pass
+
+    def test_get_columns(self):
+        """Test getting columns"""
+        self.assertEqual(database.get_table_columns("Test1"), 
+                         (("Test1", ''), ("Test2", ''), ("Test3", '')))
+        self.assertEqual(database.get_table_columns("Test2"), 
+                         (("Test1", 'TEXT'), ("Test2", 'INTEGER'), ("Test3", 'OTHER')))
+        self.assertEqual(database.get_table_columns("Test3"), 
+                         (("Test1", 'INTEGER'), ("Test2", 'TEXT'), ("Test3", 'TEXT')))
+        
+    def test_get_all_table_data(self):
+        """Test getting all the table data"""    
+        self.assertEqual(database.get_all_table_data("Test1"), [("Item1", "Item2", None)])
+        self.assertEqual(database.get_all_table_data("Test2"), [("Item1", "Item2", None)])
+        self.assertEqual(database.get_all_table_data("Test3"), [("Item1", "Item2", "Item3"), ("Item2", "Item1", "Item3")])
 
     def tearDown(self):
         database.close_connection()
         os.remove(".\Test.db")
 
 if (__name__ == "__main__"):
+    #Making sure the test database is removed
+    try:
+        os.remove(".\Test.db")
+    except:
+        pass
+
     unittest.main()
 

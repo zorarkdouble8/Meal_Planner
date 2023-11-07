@@ -177,7 +177,7 @@ def get_table_columns(table_name):
         raise Exception(error)
 
 def mirror_delete_table(table_name): 
-    """reates a mirror of a table and then deletes it. This returns the new_table_name or False if unsuccessful
+    """creates a mirror of a table and then deletes it. This returns the new_table_name or False if unsuccessful
     
         Arguements: table_name (string)
     """
@@ -203,7 +203,7 @@ def add_row_to_table(table_name, data):
     """Adds a row of data to a table in the database
     
     Arguments: table_name (string)
-                data (tuple or list in the form: (column, data))          
+                data (tuple or list in the form: (column_name, data))          
     """
     try:
         columns = []
@@ -251,7 +251,8 @@ def get_all_table_data(table_name): #Can cause error
     """Gets all the table data using a table name
     
     Arguements: table_name (string, the name of the table)
-    Returns: String (Of the data)
+    Returns: array tuple (In the form: [(column1 row1 data, column2 row1 data), 
+                                        (column1 row2 data, column2 row2 data)])
     """
     try:
         return __cursor__.execute(f"SELECT * FROM {table_name}").fetchall()
