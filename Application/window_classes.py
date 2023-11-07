@@ -11,8 +11,12 @@ class Window():
         self.parent = parent
 
 class ErrorWindow(Window):
-    def __init__(self, root, error_message, parent=None):
-        Window.__init__(self, root, parent)
+    def __init__(self, root, error_message):
+        """Shows an error window with an error message
+        
+        Arguments: root (the root of the application)
+                   error_message (the message to show in the application)"""
+        Window.__init__(self, root, None)
         self.error = error_message
         
         self.window = tkinter.Toplevel()
@@ -22,11 +26,13 @@ class ErrorWindow(Window):
         self._add_message()
         
     def _center_and_size_window(self):
+        """Centers the window and sizes it"""
         self.window.minsize(self.window.winfo_reqwidth() + 50, self.window.winfo_reqwidth() + 50)
         #Centers and sizes window (width x height + xPos + yPos)
         self.window.geometry(f"200x200+{math.floor(self.root.winfo_screenwidth()/2 - 100)}+{math.floor(self.root.winfo_screenheight()/2 - 100)}")
 
     def _add_message(self):
+        """Adds a label with the error message inside it"""
         label = ttk.Label(self.window, text=f"{self.error}")
         label.grid(column=0, row=0)
         
@@ -35,13 +41,12 @@ class TableEditorFrame(Window):
     def __init__(self, root, parent, table_name, object_message):
         """Adds a table editor frame to a parent obj
         
-        Arguements: root (the root of the application)
+        Arguments: root (the root of the application)
                     parent (the parent this frame will attach to)
                     table_name (the table this editor will show)
                     object_message (a string that customizes the option message IE: add a 'meal', add a <object_message>)
         """
         Window.__init__(self, root, parent)
-
 
         self.table_name = table_name
         self.object_message = object_message.lower()
@@ -60,6 +65,7 @@ class TableEditorFrame(Window):
         self._configure_options()
 
     def _configure_data_viewer(self):
+        """Configures the widgets"""
         self.data_viewer = ttk.Treeview(self.frame, show="headings", columns=self.columns)
         self.data_viewer.grid(column=0, row=0, rowspan=5, sticky="NSEW")
         self.data_viewer.columnconfigure(0, weight=1)
@@ -68,6 +74,7 @@ class TableEditorFrame(Window):
         self._populate_data_viewer()
 
     def _populate_data_viewer(self):
+        """Adds the table data to the data viewer"""
         self.header = []
 
         for index, column in enumerate(self.columns):
@@ -78,6 +85,7 @@ class TableEditorFrame(Window):
             self.data_viewer.insert('', tkinter.END, values=row)
 
     def _configure_options(self):
+        """Adds the options to the side of the data viewer"""
         info_label = ttk.Label(self.options_frame, text="Options")
         info_label.grid(column=0, row=0)
 
@@ -97,8 +105,8 @@ class TableEditorFrame(Window):
         save_button.grid(column=0, row=4)
         save_button.bind("<ButtonPress-1>", lambda e: database.save_data())
         
-    #Deletes a selected row from the database viewer
     def delete_row_from_database_viewer(self):
+        """Deletes a selected row from the database viewer"""
         try:
             row_selection = self.data_viewer.focus() #can case Index error
 
@@ -116,14 +124,13 @@ class TableEditorFrame(Window):
         except Exception as error:
             raise Exception(error)
 
-    #Gets the row to be editted and shows the meal window editor to edit the row
     def edit_row_from_database_viewer(self):
+        """Gets the row to be editted and shows the meal window editor to edit the row"""
         row_info = self.data_viewer.item(self.data_viewer.focus())
         self.show_window_editor(row_info["values"])
 
-
-    #Shows a window to add meals to the database, requires the root of the window and the data viewer for the meal table
     def show_window_editor(self, row_data=None):
+        """Shows a window to add meals to the database, requires the root of the window and the data viewer for the meal table"""
         window = tkinter.Toplevel()
 
         if (row_data == None or len(row_data) == 0):
@@ -203,8 +210,8 @@ class TableEditorFrame(Window):
 
         database.update_row_to_table(self.table_name, id_label.cget("text"), meal)
             
-    #Refreshed data viewer widget
     def _refresh_data_viewer(self):
+        """Gets all the data from the database to refesh the database viewer"""
         try:
             self.data = database.get_all_table_data(self.table_name)
         except Exception as error:

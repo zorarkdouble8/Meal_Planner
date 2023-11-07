@@ -82,7 +82,8 @@ def update():
     except Exception as error:
         raise Exception(error)
 
-def migrate_definitions(data_dict): #will migrate the migration to the definition
+def migrate_definitions(data_dict):
+    """Updates the original definition with the migration definition then deletes the migration definition"""
     try:
         data_dict["Version"] = data_dict["Migration"]["Version"]
         data_dict["Tables"] = data_dict["Migration"]["Tables"]
@@ -253,11 +254,6 @@ def get_all_table_data(table_name): #Can cause error
         return __cursor__.execute(f"SELECT * FROM {table_name}").fetchall()
     except Exception as error:
         raise Exception(error)
-
-def save_data():
-    """Saves the database"""
-    __connection__.commit()
-
 
 if (__name__ == "__main__"):
     initialize()
