@@ -30,9 +30,12 @@ class TestDatabaseMethods(unittest.TestCase):
         self.assertEqual(database.get_all_table_data(new_name2), [("Item1", "Item2", 'None')])
         self.assertEqual(database.get_all_table_data(new_name3), [("Item1", "Item2", "Item3"), ("Item2", "Item1", "Item3")])
 
-        self.assertRaises(Exception("no such table: Test1"), database.mirror_delete_table("Test1"))
-        self.assertRaises(Exception("no such table: Test2"), database.mirror_delete_table("Test2"))
-        self.assertRaises(Exception("no such table: Test3"), database.mirror_delete_table("Test3"))
+        with self.assertRaises(Exception):
+            database.mirror_delete_table("Test1")
+        with self.assertRaises(Exception):
+            database.mirror_delete_table("Test2")
+        with self.assertRaises(Exception):
+            database.mirror_delete_table("Test3")
 
     def test_update_row_to_table(self):
         pass #Will be added later when the funtion is redone
