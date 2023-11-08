@@ -15,6 +15,7 @@ class TestDatabaseMethods(unittest.TestCase):
         database.create_table("Test3", ("'Test1' INTEGER", "'Test2' TEXT", "'Test3' TEXT"))
 
         #Add data to the tables
+        """The get_columns test will fail if add_row_to_table function fails"""
         database.add_row_to_table("Test1", (("Test1", "Item1"), ("Test2", "Item2")))
         database.add_row_to_table("Test2", (("Test1", "Item1"), ("Test2", "Item2")))
         database.add_row_to_table("Test3", (("Test1", "Item1"), ("Test2", "Item2"), ("Test3", "Item3")))
@@ -33,14 +34,11 @@ class TestDatabaseMethods(unittest.TestCase):
         self.assertRaises(Exception("no such table: Test2"), database.mirror_delete_table("Test2"))
         self.assertRaises(Exception("no such table: Test3"), database.mirror_delete_table("Test3"))
 
-    def test_add_row_to_table(self):
-        pass
-
     def test_update_row_to_table(self):
-        pass
+        pass #Will be added later when the funtion is redone
 
     def test_delete_table_data(self):
-        pass
+        pass #Will be added later when the funtion is redone
 
     def test_get_columns(self):
         """Test getting columns"""
@@ -59,12 +57,13 @@ class TestDatabaseMethods(unittest.TestCase):
 
     def tearDown(self):
         database.close_connection()
-        os.remove(".\Test.db")
+        os.remove("./Test.db")
 
 if (__name__ == "__main__"):
     #Making sure the test database is removed
     try:
-        os.remove(".\Test.db")
+        database.close_connection()
+        os.remove("./Test.db")
     except:
         pass
 
