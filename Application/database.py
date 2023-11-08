@@ -12,6 +12,7 @@ def save_database():
     __connection__.commit()
 
 def close_connection():
+    __cursor__.close()
     __connection__.close()
 
 def check_fix_database(): #Checks the database and fixs any problems
