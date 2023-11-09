@@ -1,6 +1,7 @@
 import tkinter
 from tkinter import ttk
 
+from Definitions.updater import Updater
 from database import Database
 from window_classes import *
 
@@ -10,6 +11,7 @@ class Application():
 
     def __init__(self):
         self.database = Database("Food.db")
+        self.updater = Updater(self.database)
         self.root = tkinter.Tk("My application")
 
         self.root.title("My Application")
@@ -19,10 +21,10 @@ class Application():
         try:
             self.database.check_fix_database()
 
-            if (self.database.check_update() == True): #can raise FileNotFoundError
+            if (self.updater.check_update() == True): #can raise FileNotFoundError
                 #TODO ask user if he/she wants to update the application
 
-                self.database.update()
+                self.updater.update()
                 #TODO show a successful message    
         except Exception as error:
             ErrorWindow(self.root, error)
