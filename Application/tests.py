@@ -16,6 +16,7 @@ class TestDatabaseMethods(unittest.TestCase):
 
         #Add data to the tables
         """The get_columns test will fail if add_row_to_table function fails"""
+        """The get_columns test will fail if add_row_to_table function fails"""
         database.add_row_to_table("Test1", (("Test1", "Item1"), ("Test2", "Item2")))
         database.add_row_to_table("Test2", (("Test1", "Item1"), ("Test2", "Item2")))
         database.add_row_to_table("Test3", (("Test1", "Item1"), ("Test2", "Item2"), ("Test3", "Item3")))
@@ -38,10 +39,10 @@ class TestDatabaseMethods(unittest.TestCase):
             database.mirror_delete_table("Test3")
 
     def test_update_row_to_table(self):
-        pass #Will be added later when the funtion is redone
+        pass #Will be added later when the funtion is redone #Will be added later when the funtion is redone
 
     def test_delete_table_data(self):
-        pass #Will be added later when the funtion is redone
+        pass #Will be added later when the funtion is redone #Will be added later when the funtion is redone
 
     def test_get_columns(self):
         """Test getting columns"""
