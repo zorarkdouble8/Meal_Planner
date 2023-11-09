@@ -3,8 +3,6 @@ from tkinter import Tk
 from tkinter import ttk
 import tkinter
 
-import database
-
 class Window():
     def __init__(self, root, parent):
         self.root = root
@@ -38,7 +36,7 @@ class ErrorWindow(Window):
         
 
 class TableEditorFrame(Window):
-    def __init__(self, root, parent, table_name, object_message):
+    def __init__(self, root, parent, table_name, object_message, database):
         """Adds a table editor frame to a parent obj
         
         Arguments: root (the root of the application)
@@ -55,9 +53,11 @@ class TableEditorFrame(Window):
         self.options_frame = ttk.Frame(self.frame)
         self.options_frame.grid(column=1, row=0, sticky="N")
 
+        self.database = database
+
         try:
-            self.columns = database.get_table_columns(table_name)
-            self.data = database.get_all_table_data(table_name)
+            self.columns = self.database.get_table_columns(table_name)
+            self.data = self.database.get_all_table_data(table_name)
         except Exception as error:
             raise Exception(error)
         
@@ -103,7 +103,7 @@ class TableEditorFrame(Window):
 
         save_button = ttk.Button(self.options_frame, text="Save")
         save_button.grid(column=0, row=4)
-        save_button.bind("<ButtonPress-1>", lambda e: database.save_data())
+        save_button.bind("<ButtonPress-1>", lambda e: self.database.save_database())
         
     def delete_row_from_database_viewer(self):
         """Deletes a selected row from the database viewer"""
@@ -114,7 +114,7 @@ class TableEditorFrame(Window):
             values = data["values"]
             column_index = self.header.index("ID") #can cause value error
 
-            database.delete_table_data(values[column_index], self.table_name)
+            self.database.delete_table_data(values[column_index], self.table_name)
 
             self.data_viewer.delete(row_selection)
         except IndexError as error:
@@ -130,7 +130,7 @@ class TableEditorFrame(Window):
         self.show_window_editor(row_info["values"])
 
     def show_window_editor(self, row_data=None):
-        """Shows a window to add meals to the database, requires the root of the window and the data viewer for the meal table"""
+        """Shows a window to add meals to the self.database, requires the root of the window and the data viewer for the meal table"""
         window = tkinter.Toplevel()
 
         if (row_data == None or len(row_data) == 0):
@@ -192,7 +192,7 @@ class TableEditorFrame(Window):
 
             meal.append((labels[index].cget("text").replace(":", ""), text))
 
-        database.add_row_to_table(self.table_name, meal)
+        self.database.add_row_to_table(self.table_name, meal)
 
     def modify_row_database(self, id_label, labels, entries):
         """Modifies and existing row in the database
@@ -208,12 +208,12 @@ class TableEditorFrame(Window):
 
             meal.append((labels[index].cget("text").replace(":", ""), text))
 
-        database.update_row_to_table(self.table_name, id_label.cget("text"), meal)
+        self.database.update_row_to_table(self.table_name, id_label.cget("text"), meal)
             
     def _refresh_data_viewer(self):
         """Gets all the data from the database to refesh the database viewer"""
         try:
-            self.data = database.get_all_table_data(self.table_name)
+            self.data = self.database.get_all_table_data(self.table_name)
         except Exception as error:
             raise Exception(error)
         
