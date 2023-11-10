@@ -66,7 +66,7 @@ class TableEditorFrame(Window):
 
     def _configure_data_viewer(self):
         """Configures the widgets"""
-        self.data_viewer = ttk.Treeview(self.frame, show="headings", columns=self.columns)
+        self.data_viewer = ttk.Treeview(self.frame, show="headings", columns=self.columns["Names"])
         self.data_viewer.grid(column=0, row=0, rowspan=5, sticky="NSEW")
         self.data_viewer.columnconfigure(0, weight=1)
         self.data_viewer.rowconfigure(0, weight=1)
@@ -77,9 +77,9 @@ class TableEditorFrame(Window):
         """Adds the table data to the data viewer"""
         self.header = []
 
-        for index, column in enumerate(self.columns):
-            self.data_viewer.heading(index, text=f"{column[0]}")
-            self.header.append(column[0]) #for use in other methods
+        for index, column_name in enumerate(self.columns["Names"]):
+            self.data_viewer.heading(index, text=f"{column_name}")
+            self.header.append(column_name) #for use in other methods
 
         for row in self.data:
             self.data_viewer.insert('', tkinter.END, values=row)
@@ -130,85 +130,103 @@ class TableEditorFrame(Window):
         self.show_window_editor(row_info["values"])
 
     def show_window_editor(self, row_data=None):
-        """Shows a window to add meals to the self.database, requires the root of the window and the data viewer for the meal table"""
+        """Shows a window to add meals to the self.database, requires the root of the window and the data viewer for the meal table
+        
+            Parameters: row_data (The data to show for the coresponding columns)
+        """
         window = tkinter.Toplevel()
+        #Centers and sizes window (width x height + xPos + yPos)
+        window.minsize(window.winfo_reqwidth() + 50, window.winfo_reqwidth() + 50)
+        window.geometry(f"200x200+{math.floor(self.root.winfo_screenwidth()/2 - 100)}+{math.floor(self.root.winfo_screenheight()/2 - 100)}")
 
-        if (row_data == None or len(row_data) == 0):
+        is_adding = (row_data == None or len(row_data) == 0)
+
+        labels = []
+        widgets = []
+        id = None
+
+        if (is_adding):
             window.title(f"Add a {self.object_message.title()}")
         else:
             window.title(f"Edit a {self.object_message.title()}")
 
-        window.minsize(window.winfo_reqwidth() + 50, window.winfo_reqwidth() + 50)
-        #Centers and sizes window (width x height + xPos + yPos)
-        window.geometry(f"200x200+{math.floor(self.root.winfo_screenwidth()/2 - 100)}+{math.floor(self.root.winfo_screenheight()/2 - 100)}")
+        for index, name in enumerate(self.columns["Names"]):
+            label = ttk.Label(window, text=f'{name}:')
 
-        entries = []
-        labels = []
+            #ID cannot be updated / changed by user
+            if (name == "ID" and is_adding):
+                widget = ttk.Label(window, text="Automatically Generated")
+            elif (name == "ID"):
+                id = row_data[index]
+                widget = ttk.Label(window, text=id)
 
-        for index, column in enumerate(self.columns):
-            column_name = column[0]
-            type = column[1]
+            if (self.columns["Types"][index] == "TEXT"):
+                widget = ttk.Entry(window)
 
-            label = ttk.Label(window, text=f'{column_name}:')
+                if (not is_adding):
+                    widget.insert(0, row_data[index])
+            elif (self.columns["Types"][index] == "INTEGER"):
+                pass #TODO implement widget for the integer type
+
+            #Places the widgets onto the window
             label.grid(column=0, row=index)
+            widget.grid(column=1, row=index)
 
-            if (type == "TEXT"):
-                entry = ttk.Entry(window)
-                if not (row_data == None or len(row_data) == 0):
-                    entry.insert(0, row_data[index])
+            #For later use
+            labels.append(label)
+            widgets.append(widget) 
 
-                entry.grid(column=1, row=index)
-                entries.append(entry)
-                labels.append(label)
-            elif (column_name == "ID"):
-                if not (row_data == None or len(row_data) == 0):
-                    text = row_data[index]
-                else:
-                    text = "Automatically Generated"
-                id_label = ttk.Label(window, text=text)
-                id_label.grid(column=1, row=index)
-
-        if (row_data == None or len(row_data) == 0):
+        #Add the add or save button accordingly
+        if (is_adding):
             add_button = ttk.Button(window, text=f"Add {self.object_message}")
-            add_button.bind("<ButtonPress-1>", lambda e: ((self.add_row_database(labels, entries), self._refresh_data_viewer()), window.destroy()))
+            add_button.bind("<ButtonPress-1>", lambda e: ((self.add_row_database(labels, widgets), self._refresh_data_viewer()), window.destroy()))
         else:
             add_button = ttk.Button(window, text=f"Save {self.object_message}")
-            add_button.bind("<ButtonPress-1>", lambda e: ((self.modify_row_database(id_label, labels, entries), self._refresh_data_viewer()), window.destroy()))
+            add_button.bind("<ButtonPress-1>", lambda e: ((self.modify_row_database(id, labels, widgets), self._refresh_data_viewer()), window.destroy()))
 
         add_button.grid(column=1, sticky="S")
             
-    def add_row_database(self, labels, entries):
+    def add_row_database(self, labels, widgets):
         """Adds a row to the database and then refreshes the database viewer
     
-        Arguements: labels (the label associated with the entry)
-                    entries (entries used for user input)
+        Arguments: labels (the label associated with the entry)
+                    widgets (widgets used for user input (NOTE: only entries are be counted for data))
         """
-        meal = []
+        row = []
 
-        for index, entry in enumerate(entries):
-            text = entry.get()
+        for index, widget in enumerate(widgets):
+            if (type(widget) == ttk.Entry):
+                text = widget.get()
+            else:
+                continue
+
             if (text == ''):
                 text = "None"
 
-            meal.append((labels[index].cget("text").replace(":", ""), text))
+            row.append((labels[index].cget("text").replace(":", ""), text))
 
-        self.database.add_row_to_table(self.table_name, meal)
+        self.database.add_row_to_table(self.table_name, row)
 
-    def modify_row_database(self, id_label, labels, entries):
+    def modify_row_database(self, id, labels, widgets):
         """Modifies and existing row in the database
         
-        Arguements: labels (the label associated with the entry)
-                    entries (entries used for user input)
+        Arguments: labels (the label associated with the entry)
+                   widgets (widgets used for user input (NOTE: only entries are be counted for data))
         """
-        meal = []
-        for index, entry in enumerate(entries):
-            text = entry.get()
+        row = []
+
+        for index, widget in enumerate(widgets):
+            if (type(widget) == ttk.Entry):
+                text = widget.get()
+            else:
+                continue
+
             if (text == ''):
                 text = "None"
 
-            meal.append((labels[index].cget("text").replace(":", ""), text))
+            row.append((labels[index].cget("text").replace(":", ""), text))
 
-        self.database.update_row_to_table(self.table_name, id_label.cget("text"), meal)
+        self.database.update_row_to_table(self.table_name, id, row)
             
     def _refresh_data_viewer(self):
         """Gets all the data from the database to refesh the database viewer"""

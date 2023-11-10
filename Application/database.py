@@ -40,12 +40,12 @@ class Database():
                     table_columns = self.get_table_columns(table)
                     def_columns = tuple(data_dict["Tables"][table]["Columns"])
 
-                    if (len(def_columns) != len(table_columns)):
+                    if (len(def_columns) != len(table_columns["Names"])):
                         raise Exception("Tables lengths are not consistant!")
                     else:
                         #Check if the names are the same
                         for x in range(0, len(def_columns)):
-                            if (f"'{table_columns[x][0]}' {table_columns[x][1]}" != def_columns[x]):
+                            if (f"'{table_columns['Names'][x]}' {table_columns['Types'][x]}" != def_columns[x]):
                                 raise Exception(f"Columns don't match! '{table_columns[x][0]}' {table_columns[x][1]} != {def_columns[x]}")
                             
             self.connection.commit()
@@ -70,13 +70,13 @@ class Database():
     def get_table_columns(self, table_name):
         """Returns the columns from a table
         
-        Returns 2D Tuple (('Name', 'Type'))
+        Returns a dictionary of {"Names": (column names), "Types": (column types)}
         """
         try:
-            column_names = self.cursor.execute(f"SELECT name, type FROM PRAGMA_TABLE_INFO('{table_name}')").fetchall()
+            column_names = self.cursor.execute(f"SELECT name FROM PRAGMA_TABLE_INFO('{table_name}')").fetchall()
+            column_types = self.cursor.execute(f"SELECT type FROM PRAGMA_TABLE_INFO('{table_name}')").fetchall()
 
-            name_list = [name for name in column_names]
-            return tuple(name_list)
+            return {"Names": tuple(name[0] for name in column_names), "Types": tuple(type[0] for type in column_types)}
         except Exception as error:
             raise Exception(error)
 
@@ -87,7 +87,7 @@ class Database():
         """
 
         try:
-            column_names = [col_def[0] for col_def in self.get_table_columns(table_name)]
+            column_names = self.get_table_columns(table_name)["Names"]
 
             table_data = self.get_all_table_data(table_name)
             new_table_name = table_name + "_Mirror"
