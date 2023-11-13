@@ -1,7 +1,7 @@
 import tkinter
 from tkinter import ttk
 
-from Definitions.updater import Updater
+from updater import Updater
 from database import Database
 from window_classes import *
 

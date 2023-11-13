@@ -1,7 +1,9 @@
 import os
 import unittest
+import shutil
 
 from database import Database
+from updater import Updater
 
 class TestDatabaseMethods(unittest.TestCase):
     """Test all the methods that get data from the database"""
@@ -61,12 +63,40 @@ class TestDatabaseMethods(unittest.TestCase):
         self.database.close_connection()
         os.remove("./Test.db")
 
+class TestUpdater(unittest.TestCase):
+    def setUp(self):
+        self.database = Database("Test.db")
+
+        shutil.copyfile("Application/Definitions/Test_definitions/test1.json", "Application/Definitions/Test_definitions/test1Copy.json")
+        shutil.copyfile("Application/Definitions/Test_definitions/test2.json", "Application/Definitions/Test_definitions/test2Copy.json")
+
+        self.updater1 =  Updater(self.database, file="Application/Definitions/Test_definitions/test1.json")
+        self.updater2 =  Updater(self.database, file="Application/Definitions/Test_definitions/test2.json")
+
+
+    def test_check_update(self):
+        self.assertTrue(self.updater1.check_update())
+        self.assertFalse(self.updater2.check_update())
+
+    def test_update(self):
+        self.updater1.update() 
+
+    def tearDown(self):
+        self.database.close_connection()
+        os.remove("./Test.db")
+
+        shutil.copyfile("Application/Definitions/Test_definitions/test1Copy.json", "Application/Definitions/Test_definitions/test1.json")
+        os.remove("Application/Definitions/Test_definitions/test1Copy.json")
+
+        shutil.copyfile("Application/Definitions/Test_definitions/test2Copy.json", "Application/Definitions/Test_definitions/test2.json")
+        os.remove("Application/Definitions/Test_definitions/test2Copy.json")
+
 if (__name__ == "__main__"):
     #Making sure the test database is removed
     try:
         os.remove("./Test.db")
     except:
         pass
-
+     
     unittest.main()
 

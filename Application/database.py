@@ -121,12 +121,12 @@ class Database():
         except Exception as error:
             raise Exception(error)
 
-    def update_row_to_table(self, table_name, id, data):
+    def update_row_to_table(self, id, table_name, data):
         """Adds a row of data to a table in the database
         
         Arguments: table_name (string)
                     id (int (the unique identifier of the row))
-                    data (tuple or list in the form: (column, data))          
+                    data_index (int or string (the unique ID)      
         """
         try:
             columns = []

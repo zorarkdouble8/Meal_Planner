@@ -1,0 +1,12 @@
+{
+    "Version": [1.0],
+
+    "Tables":
+    {
+        "Meals":
+        {
+            "Columns": ["Name", "Servings", "ID", "Ingredients"],
+            "Options": ["PRIMARY KEY('ID' AUTOINCREMENT)"]
+        }
+    }
+}

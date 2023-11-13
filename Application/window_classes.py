@@ -3,6 +3,8 @@ from tkinter import Tk
 from tkinter import ttk
 import tkinter
 
+from database import Database
+
 class Window():
     def __init__(self, root, parent):
         self.root = root
@@ -36,7 +38,7 @@ class ErrorWindow(Window):
         
 
 class TableEditorFrame(Window):
-    def __init__(self, root, parent, table_name, object_message, database):
+    def __init__(self, root, parent, table_name, object_message, database: Database):
         """Adds a table editor frame to a parent obj
         
         Arguments: root (the root of the application)
@@ -226,7 +228,7 @@ class TableEditorFrame(Window):
 
             row.append((labels[index].cget("text").replace(":", ""), text))
 
-        self.database.update_row_to_table(self.table_name, id, row)
+        self.database.update_row_to_table(id, self.table_name, row)
             
     def _refresh_data_viewer(self):
         """Gets all the data from the database to refesh the database viewer"""
