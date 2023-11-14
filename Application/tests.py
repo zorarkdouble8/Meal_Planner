@@ -64,6 +64,12 @@ class TestDatabaseMethods(unittest.TestCase):
         os.remove("./Test.db")
 
 class TestUpdater(unittest.TestCase):
+    def __init__(self, method_name):
+        super().__init__(method_name)
+
+        self.answer_key_1 = Updater(None, file="Application/Definitions/Test_definitions/test1Answer.json").get_definition_dic()
+        self.answer_key_2 = Updater(None, file="Application/Definitions/Test_definitions/test2Answer.json").get_definition_dic()
+
     def setUp(self):
         self.database = Database("Test.db")
 
@@ -73,13 +79,23 @@ class TestUpdater(unittest.TestCase):
         self.updater1 =  Updater(self.database, file="Application/Definitions/Test_definitions/test1.json")
         self.updater2 =  Updater(self.database, file="Application/Definitions/Test_definitions/test2.json")
 
-
     def test_check_update(self):
         self.assertTrue(self.updater1.check_update())
         self.assertFalse(self.updater2.check_update())
 
     def test_update(self):
         self.updater1.update() 
+        
+        #Will raise an error (can't update)
+        with self.assertRaises(Exception):
+            self.updater2.update()
+
+        #check for correctness
+        updated_data_dic = self.updater1.get_definition_dic()
+        self.assertEqual(updated_data_dic, self.answer_key_1)
+
+        updated_data_dic = self.updater2.get_definition_dic()
+        self.assertEqual(updated_data_dic, self.answer_key_2)
 
     def tearDown(self):
         self.database.close_connection()

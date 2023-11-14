@@ -7,6 +7,10 @@ class Updater():
         self.database = database
         self.definition_file = file
 
+    def get_definition_dic(self):
+        with open(self.definition_file, "r") as file:
+            return json.load(file)
+
     def check_update(self):
         """Checks if there's an update available inside the definition.json
         
@@ -27,6 +31,9 @@ class Updater():
     def update(self):
         """Updates the database"""
         try:
+            if (self.check_update() == False):
+                raise Exception("Cannot update!")
+
             with open(self.definition_file, "r+") as file:
                 data_dict = json.load(file)
 
